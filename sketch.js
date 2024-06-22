@@ -2,6 +2,8 @@ let stars = [];
 let speed = 0;
 let maxSpeed = 10;
 let friction = 0.98;
+let stopTimer = 0;
+let slowdownDelay = 5000; // 5 seconds
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -13,13 +15,18 @@ function setup() {
 function draw() {
   background(0);
   
-  let targetSpeed = dist(mouseX, mouseY, pmouseX, pmouseY) / 10;
-  speed = lerp(speed, targetSpeed, 0.1);
-  speed *= friction;
-  
+  let targetSpeed = dist(mouseX, mouseY, width / 2, height / 2) / 50;
+  if (targetSpeed > 0) {
+    speed = targetSpeed;
+    stopTimer = millis();
+  } else if (millis() - stopTimer > slowdownDelay) {
+    speed *= friction;
+  }
+
   translate(width / 2, height / 2);
+  let angle = atan2(mouseY - height / 2, mouseX - width / 2);
   for (let star of stars) {
-    star.update();
+    star.update(angle);
     star.show();
   }
 }
@@ -36,8 +43,14 @@ class Star {
     this.pz = this.z;
   }
   
-  update() {
+  update(angle) {
+    let dx = cos(angle) * speed;
+    let dy = sin(angle) * speed;
+    
+    this.x -= dx;
+    this.y -= dy;
     this.z -= speed;
+
     if (this.z < 1) {
       this.reset();
       this.z = width;
