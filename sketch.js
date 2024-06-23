@@ -1,10 +1,11 @@
 let stars = [];
 let speed = 0;
-let maxSpeed = 10;
+let maxSpeed = 5; // Reduced max speed
 let friction = 0.98;
 let stopTimer = 0;
 let slowdownDelay = 5000; // 5 seconds
 let centerZoneRadius = 100; // Radius of the central zone
+let centerSpeedMultiplier = 10; // Speed multiplier for center
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -17,7 +18,7 @@ function draw() {
   background(0);
 
   let distanceFromCenter = dist(mouseX, mouseY, width / 2, height / 2);
-  let targetSpeed = distanceFromCenter / 50;
+  let targetSpeed = distanceFromCenter / 100; // Slower speed calculation
 
   if (targetSpeed > 0) {
     speed = targetSpeed;
@@ -30,9 +31,12 @@ function draw() {
 
   let angle;
   if (distanceFromCenter < centerZoneRadius) {
-    angle = undefined; // Forward movement for stars in the central zone
+    angle = undefined; // Direct forward movement
+    speed = targetSpeed * centerSpeedMultiplier; // Apply speed multiplier for center
   } else {
-    angle = atan2(mouseY - height / 2, mouseX - width / 2);
+    let normalizedDistance = map(distanceFromCenter, centerZoneRadius, width / 2, 0, 1);
+    let targetAngle = atan2(mouseY - height / 2, mouseX - width / 2);
+    angle = lerp(0, targetAngle, normalizedDistance);
   }
 
   for (let star of stars) {
@@ -55,11 +59,8 @@ class Star {
 
   update(angle) {
     let dx, dy;
-
     if (angle === undefined) {
-      dx = 0;
-      dy = 0;
-      this.z -= speed;
+      this.z -= speed; // Move forward
     } else {
       dx = cos(angle) * speed;
       dy = sin(angle) * speed;
