@@ -5,10 +5,10 @@ let friction = 0.98;
 let stopTimer = 0;
 let slowdownDelay = 5000; // 5 seconds
 let centerZoneRadius = 100; // Radius of the central zone
-let centerSpeedMultiplier = 10; // Speed multiplier for center
+let centerSpeedMultiplier = 2; // Speed multiplier for center
 let mouseInactiveTime = 2000; // 2 seconds for mouse fade
 let lastMouseMoveTime = 0; // Track the last mouse movement time
-let starDensityMultiplier = 1; // Multiplier for star density
+let starDensityMultiplier = 0.2; // Multiplier for star density
 
 // Star size ranges for each color group
 let whiteStarSize = [2, 3, 5];
@@ -18,14 +18,14 @@ let blueStarSize = [5, 6, 8];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  createStars(500 * starDensityMultiplier);
+  createStars(500 * starDensityMultiplier); // Create stars based on density multiplier
 }
 
 function draw() {
   background(0);
 
   let distanceFromCenter = dist(mouseX, mouseY, width / 2, height / 2);
-  let targetSpeed = distanceFromCenter / 100; // Slower speed calculation
+  let targetSpeed = distanceFromCenter / 100; // Calculate speed based on distance from center
 
   if (targetSpeed > 0) {
     speed = targetSpeed;
@@ -34,7 +34,7 @@ function draw() {
     speed *= friction;
   }
 
-  translate(width / 2, height / 2);
+  translate(width / 2, height / 2); // Center the origin
 
   let angle;
   if (distanceFromCenter < centerZoneRadius) {
@@ -74,7 +74,7 @@ class Star {
       this.size = random(whiteStarSize[0], whiteStarSize[2]);
     } else if (rand < 85) { // 10% yellow/orange
       this.color = random() < 0.5 ? color(255, 255, 0) : color(255, 165, 0); // Yellow or Orange
-      this.size = random(yellowOrangeStarSize[0], yellowOrangeStarSize[4]);
+      this.size = random(yellowOrangeStarSize[0], yellowOrangeStarSize[1]);
     } else if (rand < 95) { // 10% red
       this.color = color(255, 0, 0); // Red
       this.size = random(redStarSize[0], redStarSize[4]);
